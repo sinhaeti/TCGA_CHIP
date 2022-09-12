@@ -21,14 +21,16 @@ else
 
     ####### ALIGNMENT AND VARIANT CALLING  #########
     VCF_PATHS_LIST=$(cat $VCF_PATHS)
-    for SAMPLE_PATH in ${VCF_PATHS_LIST}
+    for SAMPLE_SYM_PATH in ${VCF_PATHS_LIST}
     do
-        echo "Sending job for ${SAMPLE_PATH}"
+        SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf)
+        
+        echo "Sending job for ${SAMPLE_PREFIX}"
         sbatch \
         -o "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect_filter_log" \
         -e "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect_filter_log" \
         "${SCRIPT_DIR}/mutect_filter.sh" \
-        "${SAMPLE_PATH}"
+        "${SAMPLE_SYM_PATH}"
     done
 
 fi
