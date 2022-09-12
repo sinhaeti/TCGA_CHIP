@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=TCGA_CHIP_Script
+#SBATCH --job-name=TCGA_CHIP_Filter_Script
 #SBATCH --partition=panda_physbio
 #SBATCH --begin=now
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --mem=28G
+#SBATCH --mem=8G
 #SBATCH --time=1-00:00:00
 #SBATCH --exclude=node002.panda.pbtech,node007.panda.pbtech,node010.panda.pbtech
 source ~/.bashrc
@@ -24,10 +24,9 @@ BWA_GREF="/athena/elementolab/scratch/es984/tcga_38_genome_files/GRCh38.d1.vd1.f
 FUNCOTATOR_SOURCES="/athena/elementolab/scratch/es984/tools/funcotator/funcotator_dataSources.v1.6.20190124s"
 
 # From Sym-links, get file prefix and full path for 
-MUTECT2_VCF=$1
-PREFIX=$(basename $MUTECT2_VCF .vcf)
-MUTECT2_VCF_FILE_PATH=$(readlink -f $MUTECT2_VCF)
-
+SAMPLE_SYM_PATH=$1
+SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf)
+SAMPLE_TRUE_PATH=$(readlink -f $SAMPLE_SYM_PATH)
 
 ######### TRACK JOB #########
 #Module Loading and Sourcing
@@ -49,7 +48,7 @@ if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" ]; then
     echo "Filtering somatic variants with FilterMutectCalls..."
     conda activate gatk
     gatk FilterMutectCalls \
-        --variant "${MUTECT2_VCF_FILE_PATH}" \
+        --variant "${SAMPLE_TRUE_PATH}" \
         --output "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" \
         --reference "${BWA_GREF}"
     conda deactivate
@@ -59,6 +58,7 @@ else
 fi
 
 # takes 51 minutes with 16GB for somatic variant calling in tumor
+# takes 2 minutes with 8GB for somatic variant calling in tumor
 if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" ]; then
     echo "Annotating Mutect2 VCF with Funcotator..."
     conda activate gatk
