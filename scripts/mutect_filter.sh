@@ -11,14 +11,6 @@
 source ~/.bashrc
 
 ###### LOAD IN VARIABLES ######
-#INPUT_DIR=$2
-#OUTPUT_DIR=$3
-#SAMPLE_PREFIX=$5
-
-SCRIPT_DIR="/athena/elementolab/scratch/es984/TCGA_CHIP/scripts/"
-INPUT_VCF_DIR="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_BAMS/renamed_vcfs"
-OUTPUT_DIR="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_FILTERED_CALLS/tumor"
-
 #ASSEMBLY_REFGENE="hg38"
 BWA_GREF="/athena/elementolab/scratch/es984/tcga_38_genome_files/GRCh38.d1.vd1.fa"
 FUNCOTATOR_SOURCES="/athena/elementolab/scratch/es984/tools/funcotator/funcotator_dataSources.v1.6.20190124s"
@@ -27,6 +19,8 @@ FUNCOTATOR_SOURCES="/athena/elementolab/scratch/es984/tools/funcotator/funcotato
 SAMPLE_SYM_PATH=$1
 SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf)
 SAMPLE_TRUE_PATH=$(readlink -f $SAMPLE_SYM_PATH)
+
+OUTPUT_DIR=$2
 
 ######### TRACK JOB #########
 #Module Loading and Sourcing
@@ -74,3 +68,42 @@ if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" ]; then
 else
     echo "Mutect2 VCF already annotated"
 fi
+
+## Filter for header and coding variants 
+grep -E "^#|FRAME_SHIFT_DEL|FRAME_SHIFT_INS|MISSENSE|NONSENSE|SPLICE_SITE" <  "${SAMPLE_NAME}_mutect2_filter_funcotator.vcf" > "${SAMPLE_NAME}_mutect2_filter_funcotator_coding.vcf"
+
+#zcat ${VARDICT_TMP2_VCF} | \
+
+#        bcftools filter -e "SBF[0] < ${SB_PVAL} | ODDRATIO[0] > ${SB_ODDRATIO} | SBF[1] < ${SB_PVAL} | ODDRATIO[1] > ${SB_ODDRATIO}" -s "strictSB" -m + | \
+#        bcftools filter -e "INFO/DP < ${MIN_DEPTH}" -s "d${MIN_DEPTH}" -m + | \
+#        bcftools filter -e "INFO/VD < ${MIN_VAR_READS}" -s "hi.v.${MIN_VAR_READS}" -m + | \
+#        bcftools filter -e '((EntropyLeft < 1 | EntropyRight < 1 | EntropyCenter < 1)) & TYPE!="SNP" & HIAF < 0.05' -s "IndelEntropy" -m + > ${VARDICT_TMP3_VCF}
+
+
+#Filter for somatic variants
+#if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_vf.vcf" ]; then
+#    echo "Annotating Mutect2 VCF with Funcotator..."
+#    conda activate gatk
+#    gatk VariantFiltration \
+#         --variant "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" \
+#         --reference "${BWA_GREF}" \
+#         --output "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_vf.vcf" \
+#         --filter-name "CHIP_Filter" \
+#         --filter-expression "AF > 0.01 && AF < 0.4 && DP > 100" 
+#    conda deactivate
+#    echo "...VCF annotated."
+#else
+#    echo "Mutect2 VCF already annotated"
+#fi
+
+
+
+# Filter for calls in OG list of TCGA-CHIP variants
+
+
+#Remove unnecessary intermediate files
+echo "Final file can be found at ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf"
+
+echo " Script $0 is complete for sample ${SAMPLE_PREFIX}"
+DATE=$(date '+%d/%m/%Y %H:%M:%S');
+echo "$DATE"
