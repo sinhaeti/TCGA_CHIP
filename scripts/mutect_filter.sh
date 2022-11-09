@@ -72,6 +72,12 @@ fi
 ## Filter for header and coding variants 
 grep -E "^#|FRAME_SHIFT_DEL|FRAME_SHIFT_INS|MISSENSE|NONSENSE|SPLICE_SITE" <  "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" > "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf"
 
+# rm intermediary files to save space
+rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf
+rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf.idx
+rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf
+rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.filteringStats.tsv
+rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.idx
 
 #for file in *_mutect2_filter.vcf; do
 #    grep -E "^#|FRAME_SHIFT_DEL|FRAME_SHIFT_INS|MISSENSE|NONSENSE|SPLICE_SITE" <  "${file}" > "${file%.vcf}_funcotator_coding.vcf"
