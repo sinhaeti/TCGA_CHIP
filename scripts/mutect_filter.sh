@@ -70,7 +70,12 @@ else
 fi
 
 ## Filter for header and coding variants 
-grep -E "^#|FRAME_SHIFT_DEL|FRAME_SHIFT_INS|MISSENSE|NONSENSE|SPLICE_SITE" <  "${OUTPUT_DIR}/${SAMPLE_NAME}_mutect2_filter_funcotator.vcf" > "${OUTPUT_DIR}/${SAMPLE_NAME}_mutect2_filter_funcotator_coding.vcf"
+grep -E "^#|FRAME_SHIFT_DEL|FRAME_SHIFT_INS|MISSENSE|NONSENSE|SPLICE_SITE" <  "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" > "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf"
+
+
+#for file in *_mutect2_filter.vcf; do
+#    grep -E "^#|FRAME_SHIFT_DEL|FRAME_SHIFT_INS|MISSENSE|NONSENSE|SPLICE_SITE" <  "${file}" > "${file%.vcf}_funcotator_coding.vcf"
+#done
 
 #zcat ${VARDICT_TMP2_VCF} | \
 
