@@ -78,6 +78,13 @@ if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf" 
     rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.filteringStats.tsv
     rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.idx
 else
+    # rm intermediary files to save space
+    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf
+    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf.idx
+    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf
+    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.filteringStats.tsv
+    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.idx
+    
     echo "Filtered Coding-only Mutect2 VCF already generated"
     echo "File path is ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf"
 fi
