@@ -20,7 +20,8 @@ SAMPLE_SYM_PATH=$1
 SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf)
 SAMPLE_TRUE_PATH=$(readlink -f $SAMPLE_SYM_PATH)
 
-OUTPUT_DIR=$2
+OUTPUT_DIR_OLD=$2
+OUTPUT_DIR=$3
 
 ######### TRACK JOB #########
 #Module Loading and Sourcing
@@ -36,7 +37,7 @@ mkdir ${TEMP}; cd ${TEMP}
 echo "Sample name is ${SAMPLE_PREFIX}"
 echo  "=============================="
 
-if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf" ]; then 
+if [ (! -f "${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf") & (! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf") ]; then 
     if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" ]; then
         echo "Filtering somatic variants with FilterMutectCalls..."
         conda activate gatk
