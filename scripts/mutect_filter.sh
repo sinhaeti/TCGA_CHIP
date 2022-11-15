@@ -37,57 +37,70 @@ mkdir ${TEMP}; cd ${TEMP}
 echo "Sample name is ${SAMPLE_PREFIX}"
 echo  "=============================="
 
-if [ (! -f "${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf") & (! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf") ]; then 
-    if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" ]; then
-        echo "Filtering somatic variants with FilterMutectCalls..."
-        conda activate gatk
-        gatk FilterMutectCalls \
-            --variant "${SAMPLE_TRUE_PATH}" \
-            --output "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" \
-            --reference "${BWA_GREF}"
-        conda deactivate
-        echo "...somatic variants filtered."
+if [ ! -f "${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf" ]; then 
+    if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf" ]; then
+    
+        if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" ]; then
+            echo "Filtering somatic variants with FilterMutectCalls..."
+            conda activate gatk
+            gatk FilterMutectCalls \
+                --variant "${SAMPLE_TRUE_PATH}" \
+                --output "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" \
+                --reference "${BWA_GREF}"
+            conda deactivate
+            echo "...somatic variants filtered."
+        else
+            echo "Mutect2 somatic variants already filtered"
+        fi
+
+        # takes 51 minutes with 16GB for somatic variant calling in tumor
+        # takes 2 minutes with 8GB for somatic variant calling in tumor
+        if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" ]; then
+            echo "Annotating Mutect2 VCF with Funcotator..."
+            conda activate gatk
+            gatk Funcotator \
+                --variant "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" \
+                --reference "${BWA_GREF}" \
+                --ref-version hg38 \
+                --data-sources-path "${FUNCOTATOR_SOURCES}" \
+                --output "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" \
+                --output-file-format VCF 
+            conda deactivate
+            echo "...VCF annotated."
+        else
+            echo "Mutect2 VCF already annotated"
+        fi
+
+        ## Filter for header and coding variants 
+        grep -E "^#|FRAME_SHIFT_DEL|FRAME_SHIFT_INS|MISSENSE|NONSENSE|SPLICE_SITE" <  "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" > "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf"
+
+        # rm intermediary files to save space
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf.idx
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.filteringStats.tsv
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.idx
     else
-        echo "Mutect2 somatic variants already filtered"
+        # rm intermediary files to save space
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf.idx
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.filteringStats.tsv
+        rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.idx
+        
+        echo "Filtered Coding-only Mutect2 VCF already generated"
+        echo "File path is ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf"
     fi
-
-    # takes 51 minutes with 16GB for somatic variant calling in tumor
-    # takes 2 minutes with 8GB for somatic variant calling in tumor
-    if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" ]; then
-        echo "Annotating Mutect2 VCF with Funcotator..."
-        conda activate gatk
-        gatk Funcotator \
-            --variant "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" \
-            --reference "${BWA_GREF}" \
-            --ref-version hg38 \
-            --data-sources-path "${FUNCOTATOR_SOURCES}" \
-            --output "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" \
-            --output-file-format VCF 
-        conda deactivate
-        echo "...VCF annotated."
-    else
-        echo "Mutect2 VCF already annotated"
-    fi
-
-    ## Filter for header and coding variants 
-    grep -E "^#|FRAME_SHIFT_DEL|FRAME_SHIFT_INS|MISSENSE|NONSENSE|SPLICE_SITE" <  "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf" > "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf"
-
-    # rm intermediary files to save space
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf.idx
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.filteringStats.tsv
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.idx
 else
     # rm intermediary files to save space
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf.idx
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.filteringStats.tsv
-    rm -rf ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf.idx
+    rm -rf ${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf
+    rm -rf ${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter_funcotator.vcf.idx
+    rm -rf ${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter.vcf
+    rm -rf ${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter.vcf.filteringStats.tsv
+    rm -rf ${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter.vcf.idx
     
     echo "Filtered Coding-only Mutect2 VCF already generated"
-    echo "File path is ${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf"
+    echo "File path is ${OUTPUT_DIR_OLD}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf"
 fi
 
 
