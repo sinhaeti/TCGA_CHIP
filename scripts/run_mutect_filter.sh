@@ -13,7 +13,8 @@ else
     TISSUE=$1
     INPUT_VCF_DIR="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_BAMS/renamed_vcfs/${TISSUE}/"
     OUTPUT_DIR_OLD="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_FILTERED_CALLS/${TISSUE}/"
-    OUTPUT_DIR="/athena/hassanelab/scratch/es984/TCGA_CHIP/TCGA_FILTERED_CALLS/${TISSUE}"
+    OUTPUT_DIR=${OUTPUT_DIR_OLD}
+    #OUTPUT_DIR="/athena/hassanelab/scratch/es984/TCGA_CHIP/TCGA_FILTERED_CALLS/${TISSUE}"
     
     VCF_PATHS="${SCRIPT_DIR}/TCGA_CHIP_${TISSUE}_samples.txt" #give a path to a file to store the paths to the fastq files in $fastq_directory
 
