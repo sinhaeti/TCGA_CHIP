@@ -17,7 +17,7 @@ FUNCOTATOR_SOURCES="/athena/elementolab/scratch/es984/tools/funcotator/funcotato
 
 # From Sym-links, get file prefix and full path for 
 SAMPLE_SYM_PATH=$1
-SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf)
+SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf.gz)
 SAMPLE_TRUE_PATH=$(readlink -f $SAMPLE_SYM_PATH)
 
 OUTPUT_DIR=$2

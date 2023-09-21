@@ -21,11 +21,11 @@ else
 
     ####### ALIGNMENT AND VARIANT CALLING  #########
     #VCF_PATHS_LIST=$(cat $VCF_PATHS)
-    for SAMPLE_SYM_PATH in ${INPUT_VCF_DIR}/*vcf
+    for SAMPLE_SYM_PATH in ${INPUT_VCF_DIR}/*vcf.gz
     do
         if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf" ]; then 
 
-            SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf)
+            SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf.gz)
             
             echo "Sending job for ${SAMPLE_PREFIX}"
             sbatch \
