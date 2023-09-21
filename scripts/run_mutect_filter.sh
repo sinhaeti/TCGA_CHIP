@@ -12,9 +12,7 @@ else
     # INPUT AND OUTPUT DIRECTORY 
     TISSUE=$1
     INPUT_VCF_DIR="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_BAMS/renamed_vcfs/${TISSUE}/"
-    OUTPUT_DIR_OLD="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_FILTERED_CALLS/${TISSUE}/"
-    OUTPUT_DIR=${OUTPUT_DIR_OLD}
-    #OUTPUT_DIR="/athena/hassanelab/scratch/es984/TCGA_CHIP/TCGA_FILTERED_CALLS/${TISSUE}"
+    OUTPUT_DIR="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_FILTERED_CALLS/${TISSUE}/"
     
     VCF_PATHS="${SCRIPT_DIR}/TCGA_CHIP_${TISSUE}_samples.txt" #give a path to a file to store the paths to the fastq files in $fastq_directory
 
@@ -24,16 +22,18 @@ else
     VCF_PATHS_LIST=$(cat $VCF_PATHS)
     for SAMPLE_SYM_PATH in ${INPUT_VCF_DIR}/*vcf
     do
-        SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf)
-        
-        echo "Sending job for ${SAMPLE_PREFIX}"
-        sbatch \
-        -o "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect_filter_log" \
-        -e "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect_filter_log" \
-        "${SCRIPT_DIR}/mutect_filter.sh" \
-        "${SAMPLE_SYM_PATH}" \
-        "${OUTPUT_DIR_OLD}" \
-        "${OUTPUT_DIR}"
+        if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf" ]; then 
+
+            SAMPLE_PREFIX=$(basename $SAMPLE_SYM_PATH .vcf)
+            
+            echo "Sending job for ${SAMPLE_PREFIX}"
+            sbatch \
+            -o "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect_filter_log" \
+            -e "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect_filter_log" \
+            "${SCRIPT_DIR}/mutect_filter.sh" \
+            "${SAMPLE_SYM_PATH}" \
+            "${OUTPUT_DIR}"
+        fi
     done
 
 fi
