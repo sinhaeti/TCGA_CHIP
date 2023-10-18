@@ -11,7 +11,7 @@ else
     
     # INPUT AND OUTPUT DIRECTORY 
     TISSUE=$1
-    INPUT_VCF_DIR="/home/es984/oelab_es984/TCGA_CHIP/TCGA_BAMS/Flow/Mutect2.regions_renamed/"
+    INPUT_VCF_DIR="/home/es984/oelab_es984/TCGA_CHIP/TCGA_BAMS/chip_calls_10182023/"
     #INPUT_VCF_DIR="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_BAMS/renamed_vcfs/${TISSUE}/"
     OUTPUT_DIR="/athena/elementolab/scratch/es984/TCGA_CHIP/TCGA_FILTERED_CALLS/${TISSUE}/"
     

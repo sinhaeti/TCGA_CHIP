@@ -43,7 +43,8 @@ if [ ! -f "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter_funcotator_coding.vcf" 
         gatk FilterMutectCalls \
             --variant "${SAMPLE_TRUE_PATH}" \
             --output "${OUTPUT_DIR}/${SAMPLE_PREFIX}_mutect2_filter.vcf" \
-            --reference "${BWA_GREF}"
+            --reference "${BWA_GREF}" \
+            --stats "$(dirname $SAMPLE_TRUE_PATH)/mutect2.vcf.stats"
         conda deactivate
         echo "...somatic variants filtered."
     else
